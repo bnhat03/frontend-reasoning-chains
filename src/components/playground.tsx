@@ -2,25 +2,42 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 import {
-  useChatInteract,
-  useChatMessages,
-  IStep,
+  useChatInteract, // gửi tin nhắn
+  useChatMessages, // lấy danh sách tn
+  IStep, // Interface định nghĩa một bước trong cuộc hội thoại (một tin nhắn).
 } from "@chainlit/react-client";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef } from "react";
 
-function flattenMessages(
-  messages: IStep[], 
+declare global {
+  interface Window {
+    webkitSpeechRecognition?: typeof SpeechRecognition;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    SpeechRecognition?: any;
+  }
+
+  interface SpeechRecognitionEvent extends Event {
+    results: SpeechRecognitionResultList;
+  }
+}
+
+const SpeechRecognition: typeof window.SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
+
+function flattenMessages( // Xử lý tin nhắn dạng cây
+  messages: IStep[], // nested messages
   condition: (node: IStep) => boolean
 ): IStep[] {
   return messages.reduce((acc: IStep[], node) => {
     if (condition(node)) {
+      // Nếu tin nhắn thỏa mãn condition, nó sẽ được thêm vào mảng kết quả.
       acc.push(node);
     }
-    
+
     if (node.steps?.length) {
+      // Nếu tin nhắn có bước con (steps) => iếp tục đệ quy để thêm các tin nhắn con vào danh sách.
       acc.push(...flattenMessages(node.steps, condition));
     }
-    
+
     return acc;
   }, []);
 }
@@ -28,26 +45,90 @@ function flattenMessages(
 export function Playground() {
   const [inputValue, setInputValue] = useState("");
   const { sendMessage } = useChatInteract();
-  const { messages } = useChatMessages();
+  const { messages } = useChatMessages(); // Danh sách tin nhắn từ Chainlit (có thể chứa nested messages).
+  const [isRecording, setIsRecording] = useState(false);
+  const recognitionRef = useRef<typeof SpeechRecognition | null>(null);
 
-  const flatMessages = useMemo(() => {
-    return flattenMessages(messages, (m) => m.type.includes("message"))
-  }, [messages])
-
-  const handleSendMessage = () => {
-    const content = inputValue.trim();
-    if (content) {
-      const message = {
-        name: "user",
-        type: "user_message" as const,
-        output: content,
-      };
-      sendMessage(message, []);
-      setInputValue("");
+  const handleVoiceInput = () => {
+    if (!SpeechRecognition) {
+      alert("Trình duyệt của bạn không hỗ trợ nhận diện giọng nói.");
+      return;
     }
+
+    if (!recognitionRef.current) {
+      const recognition = new SpeechRecognition();
+      recognition.lang = "vi-VN";
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      recognition.onresult = (event: SpeechRecognitionEvent) => {
+        const transcript = event.results[0][0].transcript;
+        setInputValue(transcript);
+      };
+
+      recognition.onend = () => {
+        setIsRecording(false);
+        recognitionRef.current = null;
+      };
+
+      recognitionRef.current = recognition;
+    }
+
+    if (isRecording) {
+      recognitionRef.current.stop();
+    } else {
+      recognitionRef.current.start();
+    }
+
+    setIsRecording(!isRecording);
   };
 
+  const flatMessages = useMemo(() => {
+    return flattenMessages(messages, (m) => m.type.includes("message"));
+  }, [messages]);
+  // useMemo(...): chỉ tính toán lại danh sách khi messages thay đổi.
+  // flattenMessages(...): Làm phẳng danh sách tin nhắn, lọc ra những tin có type chứa "message"
+
+  const [pendingMessages, setPendingMessages] = useState<IStep[]>([]);
+  const handleSendMessage = async () => {
+    const content = inputValue.trim();
+    if (!content) return;
+
+    const tempMessage: IStep = {
+      id: Date.now().toString(),
+      name: "user",
+      type: "user_message",
+      output: content,
+      createdAt: new Date().toISOString(),
+    };
+
+    setPendingMessages((prev) => [...prev, tempMessage]); // Hiển thị tin nhắn "đang gửi"
+    try {
+      await sendMessage(tempMessage, []);
+      setPendingMessages((prev) =>
+        prev.filter((msg) => msg.id !== tempMessage.id)
+      ); // Xóa tin nhắn "đang gửi"
+    } catch (error) {
+      console.error("Gửi tin nhắn thất bại:", error);
+      alert("Tin nhắn chưa gửi được. Hãy thử lại.");
+    }
+
+    setInputValue("");
+  };
+  // const retrySendMessage = async (message, retries = 3) => {
+  //   for (let i = 0; i < retries; i++) {
+  //     try {
+  //       await sendMessage(message, []);
+  //       return true;
+  //     } catch (error) {
+  //       console.warn(`Thử lại lần ${i + 1}: Lỗi gửi tin nhắn`, error);
+  //     }
+  //   }
+  //   return false;
+  // };
+
   const renderMessage = (message: IStep) => {
+    // Mỗi tin nhắn ở UI (name, content, createdAt)
     const dateOptions: Intl.DateTimeFormatOptions = {
       hour: "2-digit",
       minute: "2-digit",
@@ -89,9 +170,15 @@ export function Playground() {
               }
             }}
           />
-          <Button onClick={handleSendMessage} type="submit">
-            Send
-          </Button>
+          {inputValue ? (
+            <Button onClick={handleSendMessage} type="button">
+              Send
+            </Button>
+          ) : (
+            <Button onClick={handleVoiceInput} type="button">
+              {isRecording ? "⏹ Dừng" : "🎤 Bắt đầu"}
+            </Button>
+          )}
         </div>
       </div>
     </div>
