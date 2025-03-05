@@ -2,17 +2,16 @@ import { useEffect } from "react";
 import { useSetRecoilState } from "recoil";
 import { userState } from "../state";
 import googleIcon from "./../assets/img/google-icon.png";
-import codecompleteImg from "./../assets/img/code-complete.jpg";
+import codecompleteImg from "./../assets/img/Logo-light.svg";
 import { Link } from "react-router-dom";
 export function SignUp() {
   return (
     <div className="h-screen w-full flex flex-col">
       <div>
-        <img src={codecompleteImg} alt="" className="w-50 h-20" />
+        <img src={codecompleteImg} alt="" className="w-50 h-20 p-4" />
       </div>
       <div className="flex-1 flex flex-col justify-center items-center w-full">
         <h1 className="font-bold text-[32px] uppercase mb-8">Đăng ký</h1>
-        {/* Input + Nút */}
         <div className="flex flex-col w-80">
           <div className="relative w-80 mb-6">
             <input
