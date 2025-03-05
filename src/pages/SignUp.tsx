@@ -36,7 +36,7 @@ export function SignUp() {
   };
 
   const handleLoginGoogle = async () => {
-    window.location.href = "http://192.168.91.105:8000/auth/google";
+    window.location.href = "http://localhost:8000/auth/google";
   };
 
   return (

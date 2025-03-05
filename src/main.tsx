@@ -7,7 +7,7 @@ import { AppProvider } from "./context/AppContext.tsx";
 import "./index.css";
 import { ChainlitAPI, ChainlitContext } from "@chainlit/react-client";
 
-const CHAINLIT_SERVER = "ws://192.168.91.105:8000/chainlit";
+const CHAINLIT_SERVER = "ws://localhost:8000/chainlit";
 
 const apiClient = new ChainlitAPI(CHAINLIT_SERVER, "webapp");
 

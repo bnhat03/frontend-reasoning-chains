@@ -28,6 +28,7 @@ export function Login() {
       //   responseConversation.data
       // );
       navigate("/dashboard");
+      // navigate("/playground");
     } catch (error) {
       console.error(error);
     }
