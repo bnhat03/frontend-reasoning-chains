@@ -1,9 +1,11 @@
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { useNavigate } from "react-router-dom";
 import { chatListState } from "../store/atoms";
-import { useChat } from "../context/ChatContext";
+import { useApp } from "../context/AppContext";
 import { chatHistories } from "@/data";
 import sendIcon from "./../assets/img/send.svg";
+import { sessionState, useChatSession } from "@chainlit/react-client";
+import { useEffect } from "react";
 
 interface Chat {
   _id: string;
@@ -12,7 +14,7 @@ interface Chat {
 
 const DashboardPage = () => {
   const navigate = useNavigate();
-  const { chatList, addChat } = useChat();
+  const { chatList, addChat } = useApp();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

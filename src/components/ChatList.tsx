@@ -1,13 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useChat } from "../context/ChatContext";
+import { useApp } from "../context/AppContext";
 import sidebarIcon from "../assets/img/sidebar.svg";
 import newChatIcon from "../assets/img/newchat.svg";
 
 const ChatList = () => {
-  const { chatList } = useChat(); // Lấy danh sách chat từ Context API
+  const { chatList } = useApp(); // Lấy danh sách chat từ Context API
   const [isSidebarOpen, setIsSidebarOpen] = useState(true); // State quản lý sidebar
-
+  const [listConversation, setListConversation] = useState(chatList); // State quản lý danh sách cuộc trò chuyện
+  useEffect(() => {
+    setListConversation(chatList);
+    // console.log("list conversation: >>>>>>>>>>>>>>>", chatList);
+  }, [chatList]);
   return (
     <div className={`relative`}>
       {/* Sidebar */}
@@ -50,13 +54,13 @@ const ChatList = () => {
         </span>
 
         <div className="flex flex-col overflow-auto">
-          {chatList.map((chat) => (
+          {listConversation?.map((chat) => (
             <Link
-              to={`/dashboard/chats/${chat._id}`}
-              key={chat._id}
+              to={`/dashboard/chats/${chat.id_conv}`}
+              key={chat.id_conv}
               className="px-3 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-[#6363637e] transition text-sm"
             >
-              {chat.title}
+              {chat.content}
             </Link>
           ))}
         </div>

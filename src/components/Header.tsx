@@ -5,13 +5,21 @@ import googleIcon from "./../assets/img/google-icon.png";
 import moonIcon from "./../assets/img/moon.svg";
 import sunIcon from "./../assets/img/sun.svg";
 import logoutIcon from "./../assets/img/logout.svg";
-
+import { useChatSession } from "@chainlit/react-client";
+import { useNavigate } from "react-router-dom";
 const Header = () => {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [isDark, setIsDark] = useState(
     localStorage.getItem("theme") === "dark"
   );
+  const { disconnect } = useChatSession();
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    disconnect();
+    navigate("/login");
+  };
   useEffect(() => {
     if (isDark) {
       document.documentElement.classList.add("dark");
@@ -67,7 +75,12 @@ const Header = () => {
                   src={logoutIcon}
                   alt=""
                 />
-                <button className="dark:hover:text-red-400">Đăng xuất</button>
+                <button
+                  className="dark:hover:text-red-400"
+                  onClick={handleLogout}
+                >
+                  Đăng xuất
+                </button>
               </div>
             </div>
           )}

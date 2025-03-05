@@ -7,7 +7,8 @@ import {
   IStep, // Interface định nghĩa một bước trong cuộc hội thoại (một tin nhắn).
 } from "@chainlit/react-client";
 import { useMemo, useState, useRef } from "react";
-
+import { useNavigate } from "react-router-dom";
+import Markdown from "react-markdown";
 declare global {
   interface Window {
     webkitSpeechRecognition?: typeof SpeechRecognition;
@@ -48,7 +49,7 @@ export function Playground() {
   const { messages } = useChatMessages(); // Danh sách tin nhắn từ Chainlit (có thể chứa nested messages).
   const [isRecording, setIsRecording] = useState(false);
   const recognitionRef = useRef<typeof SpeechRecognition | null>(null);
-
+  const navigate = useNavigate();
   const handleVoiceInput = () => {
     if (!SpeechRecognition) {
       alert("Trình duyệt của bạn không hỗ trợ nhận diện giọng nói.");
@@ -93,18 +94,23 @@ export function Playground() {
   const handleSendMessage = async () => {
     const content = inputValue.trim();
     if (!content) return;
-
+    let conversationId = "HiHAHA_convid";
     const tempMessage: IStep = {
-      id: Date.now().toString(),
+      id: crypto.randomUUID(),
       name: "user",
       type: "user_message",
       output: content,
       createdAt: new Date().toISOString(),
+      // metadata: {
+      //   conversation_id: conversationId, // ✅ Thêm conversation_id vào metadata
+      // },
     };
 
     setPendingMessages((prev) => [...prev, tempMessage]); // Hiển thị tin nhắn "đang gửi"
     try {
-      await sendMessage(tempMessage, []);
+      await sendMessage(tempMessage);
+
+      console.log("Danh sách tin nhắn:", messages);
       setPendingMessages((prev) =>
         prev.filter((msg) => msg.id !== tempMessage.id)
       ); // Xóa tin nhắn "đang gửi"
@@ -112,7 +118,7 @@ export function Playground() {
       console.error("Gửi tin nhắn thất bại:", error);
       alert("Tin nhắn chưa gửi được. Hãy thử lại.");
     }
-
+    // navigate("/conversations");
     setInputValue("");
   };
   // const retrySendMessage = async (message, retries = 3) => {
@@ -141,7 +147,8 @@ export function Playground() {
       <div key={message.id} className="flex items-start space-x-2">
         <div className="w-20 text-sm text-green-500">{message.name}</div>
         <div className="flex-1 border rounded-lg p-2">
-          <p className="text-black dark:text-white">{message.output}</p>
+          <Markdown>{message.output}</Markdown>
+          {/* <p className="text-black dark:text-white">{message.output}</p> */}
           <small className="text-xs text-gray-500">{date}</small>
         </div>
       </div>
