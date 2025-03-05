@@ -1,18 +1,29 @@
 import React, { useState, useEffect } from "react";
-import codecompleteImgLight from "./../assets/img/code-complete.jpg";
-import codecompleteImgDark from "./../assets/img/code-complete-dark.jpg";
+import { Link } from "react-router-dom";
+import sidebarIcon from "../assets/img/sidebar.svg";
+import newChatIcon from "../assets/img/newchat.svg";
+import codecompleteImgLight from "./../assets/img/Logo-light.svg";
+import codecompleteImgDark from "./../assets/img/Logo-dark.svg";
 import googleIcon from "./../assets/img/google-icon.png";
 import moonIcon from "./../assets/img/moon.svg";
 import sunIcon from "./../assets/img/sun.svg";
 import logoutIcon from "./../assets/img/logout.svg";
 
-const Header = () => {
+interface HeaderProps {
+  isSidebarOpen: boolean;
+  setIsSidebarOpen: (open: boolean) => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDark, setIsDark] = useState(
     localStorage.getItem("theme") === "dark"
   );
 
   useEffect(() => {
+    const root = document.documentElement;
+    root.classList.add("transition-colors", "duration-2");
+
     if (isDark) {
       document.documentElement.classList.add("dark");
       localStorage.setItem("theme", "dark");
@@ -23,21 +34,43 @@ const Header = () => {
   }, [isDark]);
 
   return (
-    <div className="w-full flex justify-between items-center pl-5 pr-10 mx-3 relative bg-white dark:bg-black transition-colors">
-      {/* Logo */}
-      <div className="w-22 h-20">
-        <img
-          src={isDark ? codecompleteImgDark : codecompleteImgLight}
-          alt="Code Complete"
-          className="w-full h-full object-contain"
-        />
+    <div className="w-full flex justify-between items-center pl-5 pr-10 absolute top-0">
+      {/* <div className="fixed top-0 left-0 w-full flex justify-between items-center pl-5 pr-10 bg-white dark:bg-gray-900 shadow-md z-50 transition-colors"></div> */}
+      <div className="flex items-center gap-5">
+        {/* Hiện sidebarIcon và newChatIcon khi sidebar đóng */}
+        {!isSidebarOpen && (
+          <div className="flex gap-5">
+            <button onClick={() => setIsSidebarOpen(true)}>
+              <img
+                src={sidebarIcon}
+                alt="Open Sidebar"
+                className="w-6 h-6 dark:invert transition-all duration-1000"
+              />
+            </button>
+            <Link to="/dashboard">
+              <img
+                src={newChatIcon}
+                alt="New Chat"
+                className="w-8 h-8 dark:invert transition-all duration-1000"
+              />
+            </Link>
+          </div>
+        )}
+        {/* Logo */}
+        <div className="w-22 h-20 py-4">
+          <img
+            src={isDark ? codecompleteImgDark : codecompleteImgLight}
+            alt="Code Complete"
+            className="w-full h-full object-contain"
+          />
+        </div>
       </div>
 
       {/* Icons */}
       <div className="flex gap-5 items-center">
         {/* Toggle Light/Dark Mode */}
         <div
-          className="w-6 h-6 cursor-pointer transition-all"
+          className="w-6 h-6 cursor-pointer"
           onClick={() => setIsDark(!isDark)}
         >
           <img
@@ -53,17 +86,15 @@ const Header = () => {
           onClick={() => setIsOpen(!isOpen)}
         >
           <img src={googleIcon} alt="Google" className="w-full h-full" />
-
-          {/* Dropdown Menu */}
           {isOpen && (
-            <div className="absolute right-0 mt-2 w-55 bg-white dark:bg-gray-800 shadow-lg rounded-md text-gray-700 dark:text-gray-200 flex flex-col justify-center items-center border border-[#e3e3e3] dark:border-gray-700">
-              <div className="flex flex-col items-center p-3">
+            <div className="absolute right-0 mt-2 w-55 bg-white dark:bg-gray-800 shadow-lg rounded-md text-gray-700 dark:text-gray-200 z-50">
+              <div className="p-3">
                 <img className="w-12 h-12" src={googleIcon} alt="" />
                 <span className="text-sm mt-2">nguyenvana@gmail.com</span>
               </div>
-              <div className="flex gap-3 justify-center items-center p-3 border-t border-[#e3e3e3] dark:border-gray-700">
+              <div className="p-3 flex border-t dark:border-gray-700">
                 <img
-                  className="opacity-70 filter invert-0 dark:invert"
+                  className="opacity-70 dark:invert mr-2"
                   src={logoutIcon}
                   alt=""
                 />

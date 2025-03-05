@@ -1,80 +1,76 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useChat } from "../context/ChatContext";
 import sidebarIcon from "../assets/img/sidebar.svg";
 import newChatIcon from "../assets/img/newchat.svg";
 
-const ChatList = () => {
-  const { chatList } = useChat(); // Lấy danh sách chat từ Context API
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // State quản lý sidebar
+interface ChatListProps {
+  isSidebarOpen: boolean;
+  setIsSidebarOpen: (open: boolean) => void;
+}
+
+const ChatList: React.FC<ChatListProps> = ({
+  isSidebarOpen,
+  setIsSidebarOpen,
+}) => {
+  const { chatList } = useChat();
+  const location = useLocation();
 
   return (
-    <div className={`relative`}>
-      {/* Sidebar */}
+    <div className="relative">
       <div
-        className={`fixed top-0 left-0 h-full bg-[#f9f9f9] dark:bg-[#918f8f2f] shadow-[3px_0_8px_rgba(0,0,0,0.1)] dark:shadow-[3px_0_8px_rgba(255,255,255,0.2)] p-4 w-[260px] transition-all duration-500 ease-in-out ${
+        className={`fixed top-0 left-0 h-full bg-[#f9f9f9] dark:bg-[#918f8f2f] shadow-lg p-5 w-[260px] transition-transform duration-1000 ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        {/* Icon đóng mở Sidebar */}
         <div className="flex justify-between items-center mb-6">
           <button
-            className="w-6 h-6 opacity-70 filter invert-0 dark:invert"
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="w-6 h-6 dark:invert transition-all duration-1000"
+            onClick={() => setIsSidebarOpen(false)}
           >
             <img src={sidebarIcon} alt="Toggle Sidebar" />
           </button>
-          <Link to="/dashboard" className="w-8 h-8 cursor-pointer">
+          <Link to="/dashboard" className="w-8 h-8">
             <img
-              className="opacity-90 filter invert-0 dark:invert"
+              className="w-8 h-8 dark:invert transition-all duration-1000"
               src={newChatIcon}
               alt="New Chat"
             />
           </Link>
         </div>
 
-        {/* Nội dung Sidebar */}
-        <span className="font-semibold text-xs mb-2 text-gray-400">
+        <span className="font-semibold text-xs mb-2 text-gray-500">
           DASHBOARD
         </span>
         <Link
           to="/dashboard"
-          className="block px-3 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-[#6363637e] transition text-sm"
+          className="block px-3 py-2 rounded-lg hover:bg-[#d1d1d13e] dark:hover:bg-[#63636337] text-sm"
         >
-          Tạo cuộc trò chuyện mới
+          Cuộc trò chuyện mới
         </Link>
-        <hr className="border-none h-[2px] bg-gray-300 opacity-30 rounded my-5" />
+        <hr className="border-none h-[2px] bg-gray-400 opacity-30 rounded my-5" />
 
-        <span className="font-semibold text-xs mb-2 text-gray-400 uppercase">
+        <span className="font-semibold text-xs mb-2 text-gray-500 uppercase">
           Đoạn chat gần đây
         </span>
-
         <div className="flex flex-col overflow-auto">
-          {chatList.map((chat) => (
-            <Link
-              to={`/dashboard/chats/${chat._id}`}
-              key={chat._id}
-              className="px-3 py-2 rounded-lg hover:bg-gray-200 dark:hover:bg-[#6363637e] transition text-sm"
-            >
-              {chat.title}
-            </Link>
-          ))}
+          {chatList.map((chat) => {
+            const isActive =
+              location.pathname === `/dashboard/chats/${chat._id}`;
+
+            return (
+              <Link
+                to={`/dashboard/chats/${chat._id}`}
+                key={chat._id}
+                className={`px-2 py-2 rounded-lg hover:bg-[#d1d1d13e] dark:hover:bg-[#63636337] truncate ${
+                  isActive ? "bg-[#d1d1d168] dark:bg-[#61606a77]" : ""
+                } text-sm`}
+              >
+                {chat.title}
+              </Link>
+            );
+          })}
         </div>
       </div>
-
-      {/* Nút mở sidebar khi đang ẩn */}
-      {!isSidebarOpen && (
-        <button
-          className="fixed top-3 left-3 p-2 filter invert dark:invert-0"
-          onClick={() => setIsSidebarOpen(true)}
-        >
-          <img
-            src={sidebarIcon}
-            alt="Open Sidebar"
-            className="w-6 h-6 invert"
-          />
-        </button>
-      )}
     </div>
   );
 };

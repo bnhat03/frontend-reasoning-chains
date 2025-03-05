@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useSetRecoilState } from "recoil";
 import { userState } from "./../state";
 import googleIcon from "./../assets/img/google-icon.png";
-import codecompleteImg from "./../assets/img/code-complete.jpg";
+import codecompleteImg from "./../assets/img/Logo-light.svg";
 import { Link } from "react-router-dom";
 export function Login() {
   // const setUser = useSetRecoilState(userState);
@@ -19,7 +19,7 @@ export function Login() {
   return (
     <div className="h-screen w-full flex flex-col">
       <div>
-        <img src={codecompleteImg} alt="" className="w-50 h-20" />
+        <img src={codecompleteImg} alt="" className="w-50 h-20 p-4" />
       </div>
       <div className="flex-1 flex flex-col justify-center items-center w-full">
         <h1 className="font-bold text-[32px] uppercase mb-8">Đăng nhập</h1>
@@ -56,6 +56,7 @@ export function Login() {
             />
             <label
               htmlFor="password"
+              typeof="password"
               className="absolute left-3 -top-2 bg-white px-1 text-sm text-[#f5145f] transition-all peer-placeholder-shown:top-3 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:-top-2 peer-focus:text-sm peer-focus:text-[#f5145f]"
             >
               Mật khẩu *

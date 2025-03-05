@@ -21,17 +21,17 @@ function App() {
   }, [user, connect]);
 
   return (
-    <Routes>
-      {/* <Route path="/" element={user ? <Dashboard /> : <Login />} /> */}
-      <Route path="/dashboard" element={<DashboardLayout />}>
-        <Route index element={<DashboardPage />} />
-        <Route path="chats/:id" element={<ChatPage />} />
-      </Route>
-      <Route path="/login" element={<Login />} />
-      <Route path="/sign-up" element={<SignUp />} />
-      <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
-      <Route path="/" element={<Playground />} />
-    </Routes>
+      <Routes>
+        {/* <Route path="/" element={user ? <Dashboard /> : <Login />} /> */}
+        <Route path="/dashboard" element={<DashboardLayout />}>
+          <Route index element={<DashboardPage />} />
+          <Route path="chats/:id" element={<ChatPage />} />
+        </Route>
+        <Route path="/login" element={<Login />} />
+        <Route path="/sign-up" element={<SignUp />} />
+        <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
+        <Route path="/" element={<Playground />} />
+      </Routes>
   );
 }
 

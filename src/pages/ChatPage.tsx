@@ -9,14 +9,12 @@ const ChatPage = () => {
   const chatId = path.split("/").pop() || "1";
   const [history, setHistory] = useState(chatHistories[chatId]?.history || []);
 
-  // Cập nhật lịch sử khi chatId thay đổi
   useEffect(() => {
     setHistory(chatHistories[chatId]?.history || []);
   }, [chatId]);
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  // Tự động cuộn xuống khi có tin nhắn mới
   useEffect(() => {
     chatContainerRef.current?.scrollTo({
       top: chatContainerRef.current.scrollHeight,
@@ -24,30 +22,28 @@ const ChatPage = () => {
     });
   }, [history]);
 
-  // Hàm thêm tin nhắn mới
   const addMessage = (newMessages: any[]) => {
     setHistory((prev) => {
       const updatedHistory = [...prev, ...newMessages];
-      chatHistories[chatId].history = updatedHistory; // Cập nhật dữ liệu toàn cục
+      chatHistories[chatId].history = updatedHistory;
       return updatedHistory;
     });
   };
 
   return (
-    <div className="flex flex-col items-center h-full relative">
+    <div className="flex flex-col items-center h-full w-full mt-16  overflow-hidden relative">
       <div
-        className="flex-1 overflow-auto w-full flex justify-center"
+        className="flex-1 overflow-auto w-full flex justify-center mb-28"
         ref={chatContainerRef}
       >
-        <div className="w-1/2 flex flex-col gap-5 p-4">
-          {/* Hiển thị lịch sử chat */}
+        <div className="w-[65%] flex flex-col gap-5 p-4 ">
           {history.map((message, i) => (
             <div
               key={i}
               className={`p-4 max-w-[80%] rounded-xl ${
                 message.role === "user"
-                  ? "bg-gray-500 self-end text-white"
-                  : "bg-gray-100 self-start text-black dark:bg-[#63636377] dark:text-white"
+                  ? "bg-[#d1d1d164] self-end text-black dark:bg-[#63636377] dark:text-white transition-all duration-700"
+                  : "self-start text-black  dark:text-white transition-all duration-1000"
               }`}
             >
               <Markdown>{message.parts[0].text}</Markdown>
@@ -55,8 +51,6 @@ const ChatPage = () => {
           ))}
         </div>
       </div>
-
-      {/* Ô nhập tin nhắn */}
       <NewPrompt addMessage={addMessage} chatData={history} />
     </div>
   );
