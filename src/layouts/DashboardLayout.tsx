@@ -4,16 +4,6 @@ import ChatList from "../components/ChatList";
 import Header from "@/components/Header";
 
 const DashboardLayout = () => {
-  // const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   if (isLoaded && !userId) {
-  //     navigate("/sign-in");
-  //   }
-  // }, [isLoaded, userId, navigate]);
-
-  // if (!isLoaded) return "Loading...";
-
   return (
     <div className="flex h-screen w-full overflow-hidden">
       <div className="w-1/6">
@@ -23,7 +13,7 @@ const DashboardLayout = () => {
         <div>
           <Header />
         </div>
-        <Outlet /> {/* Thay đổi theo route con */}
+        <Outlet />
       </div>
     </div>
   );

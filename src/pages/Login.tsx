@@ -19,16 +19,11 @@ export function Login() {
     try {
       const responseLogin = await loginService(email, password);
       const token = responseLogin.data.token;
-      setUserInfor({ email, token });
+      setUserInfor({ email, token, isAuthenticated: true });
       localStorage.setItem("token", token);
       const responseConversation = await getListConversations();
       addChatList(responseConversation.data);
-      // console.log(
-      //   "list conversation: >>>>>>>>>>>>>>>",
-      //   responseConversation.data
-      // );
       navigate("/dashboard");
-      // navigate("/playground");
     } catch (error) {
       console.error(error);
     }
@@ -40,7 +35,7 @@ export function Login() {
       </div>
       <div className="flex-1 flex flex-col justify-center items-center w-full">
         <h1 className="font-bold text-[32px] uppercase mb-8">Đăng nhập</h1>
-        {/* Input + Nút */}
+        {/* Form */}
         <div className="flex flex-col w-80">
           <div className="relative w-80 mb-6">
             <input
@@ -83,7 +78,7 @@ export function Login() {
             Đăng nhập
           </button>
         </div>
-        {/* Chưa có tài khoản */}
+        {/* Navigate sign-up */}
         <div className="flex gap-4 my-6">
           <span>Bạn chưa có tài khoản?</span>
           <Link

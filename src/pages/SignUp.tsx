@@ -46,7 +46,7 @@ export function SignUp() {
       </div>
       <div className="flex-1 flex flex-col justify-center items-center w-full">
         <h1 className="font-bold text-[32px] uppercase mb-8">Đăng ký</h1>
-        {/* Input + Nút */}
+        {/* Form */}
         <div className="flex flex-col w-80">
           <div className="relative w-80 mb-6">
             <input

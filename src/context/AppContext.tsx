@@ -1,9 +1,8 @@
 import { createContext, useContext, useState, ReactNode } from "react";
-
-// Định nghĩa kiểu dữ liệu cho User
 interface User {
   email: string;
   token: string;
+  isAuthenticated: boolean;
 }
 interface Conversation {
   id_conv: string;
@@ -15,15 +14,11 @@ interface UserContextType {
   setUserInfor: (userData: User) => void;
   logout: () => void;
 }
-
-// Định nghĩa kiểu dữ liệu cho Chat
-
 interface ChatContextType {
   chatList: Conversation[];
   addChatList: (convesationData: Conversation[]) => void;
 }
 
-// Gộp tất cả vào AppContextType
 interface AppContextType {
   user: User | null;
   setUserInfor: (userData: User) => void;
@@ -34,11 +29,15 @@ interface AppContextType {
 
 // Tạo AppContext
 const AppContext = createContext<AppContextType | undefined>(undefined);
-
+const DEFAULT_USER: User = {
+  email: "",
+  token: "",
+  isAuthenticated: false,
+};
 // Provider để bọc toàn bộ ứng dụng
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   // Quản lý User
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(DEFAULT_USER);
 
   const setUserInfor = (userData: User) => {
     setUser(userData);
@@ -53,7 +52,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [chatList, setChatList] = useState<Conversation[]>([]);
 
   const addChatList = (conversationData: Conversation[]) => {
-    setChatList((prevChats) => [...prevChats, ...conversationData]);
+    setChatList((prevChats) => [...conversationData]);
   };
 
   return (

@@ -7,8 +7,10 @@ import sunIcon from "./../assets/img/sun.svg";
 import logoutIcon from "./../assets/img/logout.svg";
 import { useChatSession } from "@chainlit/react-client";
 import { useNavigate } from "react-router-dom";
+import { useApp } from "@/context/AppContext";
 const Header = () => {
   const navigate = useNavigate();
+  const { user, setUserInfor } = useApp();
   const [isOpen, setIsOpen] = useState(false);
   const [isDark, setIsDark] = useState(
     localStorage.getItem("theme") === "dark"
@@ -17,6 +19,7 @@ const Header = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    setUserInfor({ token: "", email: "", isAuthenticated: false });
     disconnect();
     navigate("/login");
   };
@@ -67,7 +70,7 @@ const Header = () => {
             <div className="absolute right-0 mt-2 w-55 bg-white dark:bg-gray-800 shadow-lg rounded-md text-gray-700 dark:text-gray-200 flex flex-col justify-center items-center border border-[#e3e3e3] dark:border-gray-700">
               <div className="flex flex-col items-center p-3">
                 <img className="w-12 h-12" src={googleIcon} alt="" />
-                <span className="text-sm mt-2">nguyenvana@gmail.com</span>
+                <span className="text-sm mt-2">{user?.email}</span>
               </div>
               <div className="flex gap-3 justify-center items-center p-3 border-t border-[#e3e3e3] dark:border-gray-700">
                 <img
