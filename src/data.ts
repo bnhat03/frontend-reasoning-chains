@@ -58,7 +58,27 @@ export const chatHistories: Record<
       },
       {
         role: "lama",
-        parts: [{ type: "text", text: "Today's top tech news includes..." }],
+        parts: [
+          {
+            type: "text",
+            text: `Okay, I will calculate 202.32 x 13. I'll use several methods to ensure accuracy.
+
+**Step 1: Standard Multiplication Method**
+
+This is the traditional pen-and-paper method for multiplying.
+\`\`\`
+  202.32
+x     13
+--------
+  606.96  (202.32 x 3)
+2023.20  (202.32 x 10, shifted one place left)
+--------
+2629.16
+\`\`\`
+Therefore, using the standard multiplication method, 202.32 x 13 = 2629.16.
+`,
+          },
+        ],
       },
     ],
   },
