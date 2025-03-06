@@ -4,19 +4,25 @@ import Markdown from "react-markdown";
 import { CopyBlock, dracula } from "react-code-blocks";
 import NewPrompt from "@/components/NewPrompt";
 import { chatHistories } from "@/data";
+import { IStep, useChatInteract } from "@chainlit/react-client";
+import { getHistory } from "@/services/apiService";
+// interface Message {
+//   role: string;
+//   parts: { type: string; text: string }[];
+// }
 
-interface Message {
-  role: string;
-  parts: { type: string; text: string }[];
-}
 
 const ChatPage = () => {
   const path = useLocation().pathname;
   const chatId = path.split("/").pop() || "1";
   const [history, setHistory] = useState(chatHistories[chatId]?.history || []);
+  const { sendMessage } = useChatInteract();
 
   useEffect(() => {
-    setHistory(chatHistories[chatId]?.history || []);
+    getHistory(chatId).then((res) => {
+      setHistory(res.data);
+    });
+    // setHistory(chatHistories[chatId]?.history || []);
   }, [chatId]);
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -28,12 +34,35 @@ const ChatPage = () => {
     });
   }, [history]);
 
-  const addMessage = (newMessages: Message[]) => {
-    setHistory((prev) => {
-      const updatedHistory = [...prev, ...newMessages];
-      chatHistories[chatId].history = updatedHistory;
-      return updatedHistory;
-    });
+  // const addMessage = (newMessages: Message[]) => {
+  //   setHistory((prev) => {
+  //     const updatedHistory = [...prev, ...newMessages];
+  //     chatHistories[chatId].history = updatedHistory;
+  //     return updatedHistory;
+  //   });
+  // Hàm thêm tin nhắn mới
+  const addMessage = async (newMessages: string) => {
+    const content = newMessages.trim();
+    if (!content) return;
+    const conversationId = chatId;
+    const tempMessage: IStep = {
+      id: crypto.randomUUID(),
+      name: "user",
+      type: "user_message",
+      output: content,
+      createdAt: new Date().toISOString(),
+      metadata: {
+        conversation_id: conversationId,
+      },
+    };
+    try {
+      await sendMessage(tempMessage);
+      const responseHistory = await getHistory(chatId);
+      setHistory(responseHistory.data);
+    } catch (error) {
+      console.error("Gửi tin nhắn thất bại:", error);
+      alert("Tin nhắn chưa gửi được. Hãy thử lại.");
+    }
   };
 
   return (

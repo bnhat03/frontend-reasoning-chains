@@ -8,18 +8,28 @@ import googleIcon from "./../assets/img/google-icon.png";
 import moonIcon from "./../assets/img/moon.svg";
 import sunIcon from "./../assets/img/sun.svg";
 import logoutIcon from "./../assets/img/logout.svg";
-
+import { useChatSession } from "@chainlit/react-client";
+import { useNavigate } from "react-router-dom";
 interface HeaderProps {
   isSidebarOpen: boolean;
   setIsSidebarOpen: (open: boolean) => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ isSidebarOpen, setIsSidebarOpen }) => {
+
+// const Header = () => {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [isDark, setIsDark] = useState(
     localStorage.getItem("theme") === "dark"
   );
+  const { disconnect } = useChatSession();
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    disconnect();
+    navigate("/login");
+  };
   useEffect(() => {
     const root = document.documentElement;
     root.classList.add("transition-colors", "duration-2");
@@ -98,7 +108,12 @@ const Header: React.FC<HeaderProps> = ({ isSidebarOpen, setIsSidebarOpen }) => {
                   src={logoutIcon}
                   alt=""
                 />
-                <button className="dark:hover:text-red-400">Đăng xuất</button>
+                <button
+                  className="dark:hover:text-red-400"
+                  onClick={handleLogout}
+                >
+                  Đăng xuất
+                </button>
               </div>
             </div>
           )}

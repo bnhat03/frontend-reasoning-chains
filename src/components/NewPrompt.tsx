@@ -8,7 +8,7 @@ const NewPrompt = ({
   addMessage,
   chatData,
 }: {
-  addMessage: (messages: any[]) => void;
+  addMessage: (messages: string) => void;
   chatData: any;
 }) => {
   const [question, setQuestion] = useState("");
@@ -19,23 +19,17 @@ const NewPrompt = ({
   }, [chatData]);
 
   const add = async (text: string, isInitial: boolean) => {
-    if (isInitial) {
-      const botResponse = "Trả lời tin nhắn đầu";
-      addMessage([
-        { role: "assistant", parts: [{ type: "text", text: botResponse }] },
-      ]);
-      return;
-    }
+    // if (isInitial) {
+    //   addMessage(text);
+    //   return;
+    // }
 
-    try {
-      const botResponse = "This is a hardcoded AI response for testing.";
-      addMessage([
-        { role: "user", parts: [{ type: "text", text }] },
-        { role: "assistant", parts: [{ type: "text", text: botResponse }] },
-      ]);
-    } catch (err) {
-      console.error(err);
-    }
+    // try {
+    //   addMessage(text);
+    // } catch (err) {
+    //   console.error(err);
+    // }
+    addMessage(text);
   };
 
   useEffect(() => {

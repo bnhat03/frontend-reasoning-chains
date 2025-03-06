@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { useChat } from "../context/ChatContext";
+// import { useChat } from "../context/ChatContext";
 import sidebarIcon from "../assets/img/sidebar.svg";
 import newChatIcon from "../assets/img/newchat.svg";
 
@@ -8,13 +8,31 @@ interface ChatListProps {
   setIsSidebarOpen: (open: boolean) => void;
 }
 
+// const ChatList: React.FC<ChatListProps> = ({
+//   isSidebarOpen,
+//   setIsSidebarOpen,
+// }) => {
+  // const { chatList } = useChat();
+  
+
+import { useEffect, useState } from "react";
+// import { Link } from "react-router-dom";
+import { useApp } from "../context/AppContext";
+// import sidebarIcon from "../assets/img/sidebar.svg";
+// import newChatIcon from "../assets/img/newchat.svg";
+
 const ChatList: React.FC<ChatListProps> = ({
   isSidebarOpen,
   setIsSidebarOpen,
 }) => {
-  const { chatList } = useChat();
+  const { chatList } = useApp(); // Lấy danh sách chat từ Context API
   const location = useLocation();
-
+  // const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [listConversation, setListConversation] = useState(chatList); // State quản lý danh sách cuộc trò chuyện
+  useEffect(() => {
+    setListConversation(chatList);
+    // console.log("list conversation: >>>>>>>>>>>>>>>", chatList);
+  }, [chatList]);
   return (
     <div className="relative">
       <div
@@ -53,19 +71,19 @@ const ChatList: React.FC<ChatListProps> = ({
           Đoạn chat gần đây
         </span>
         <div className="flex flex-col overflow-auto">
-          {chatList.map((chat) => {
+          {listConversation.map((chat) => {
             const isActive =
-              location.pathname === `/dashboard/chats/${chat._id}`;
+              location.pathname === `/dashboard/chats/${chat.id_conv}`;
 
             return (
               <Link
-                to={`/dashboard/chats/${chat._id}`}
-                key={chat._id}
+                to={`/dashboard/chats/${chat.id_conv}`}
+                key={chat.id_conv}
                 className={`px-2 py-2 rounded-lg hover:bg-[#d1d1d13e] dark:hover:bg-[#63636337] truncate ${
                   isActive ? "bg-[#d1d1d168] dark:bg-[#61606a77]" : ""
                 } text-sm`}
               >
-                {chat.title}
+                {chat.content}
               </Link>
             );
           })}
