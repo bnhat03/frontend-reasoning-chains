@@ -2,9 +2,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 import {
-  useChatInteract, // gửi tin nhắn
-  useChatMessages, // lấy danh sách tn
-  IStep, // Interface định nghĩa một bước trong cuộc hội thoại (một tin nhắn).
+  useChatInteract,
+  useChatMessages,
+  IStep,
 } from "@chainlit/react-client";
 import { useMemo, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
@@ -12,10 +12,8 @@ import Markdown from "react-markdown";
 declare global {
   interface Window {
     webkitSpeechRecognition?: typeof SpeechRecognition;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     SpeechRecognition?: any;
   }
-
   interface SpeechRecognitionEvent extends Event {
     results: SpeechRecognitionResultList;
   }
@@ -23,22 +21,17 @@ declare global {
 
 const SpeechRecognition: typeof window.SpeechRecognition =
   window.SpeechRecognition || window.webkitSpeechRecognition;
-
-function flattenMessages( // Xử lý tin nhắn dạng cây
-  messages: IStep[], // nested messages
+function flattenMessages(
+  messages: IStep[],
   condition: (node: IStep) => boolean
 ): IStep[] {
   return messages.reduce((acc: IStep[], node) => {
     if (condition(node)) {
-      // Nếu tin nhắn thỏa mãn condition, nó sẽ được thêm vào mảng kết quả.
       acc.push(node);
     }
-
     if (node.steps?.length) {
-      // Nếu tin nhắn có bước con (steps) => iếp tục đệ quy để thêm các tin nhắn con vào danh sách.
       acc.push(...flattenMessages(node.steps, condition));
     }
-
     return acc;
   }, []);
 }
@@ -46,7 +39,7 @@ function flattenMessages( // Xử lý tin nhắn dạng cây
 export function Playground() {
   const [inputValue, setInputValue] = useState("");
   const { sendMessage } = useChatInteract();
-  const { messages } = useChatMessages(); // Danh sách tin nhắn từ Chainlit (có thể chứa nested messages).
+  const { messages } = useChatMessages();
   const [isRecording, setIsRecording] = useState(false);
   const recognitionRef = useRef<typeof SpeechRecognition | null>(null);
   const navigate = useNavigate();
@@ -87,9 +80,6 @@ export function Playground() {
   const flatMessages = useMemo(() => {
     return flattenMessages(messages, (m) => m.type.includes("message"));
   }, [messages]);
-  // useMemo(...): chỉ tính toán lại danh sách khi messages thay đổi.
-  // flattenMessages(...): Làm phẳng danh sách tin nhắn, lọc ra những tin có type chứa "message"
-
   const [pendingMessages, setPendingMessages] = useState<IStep[]>([]);
   const handleSendMessage = async () => {
     const content = inputValue.trim();
@@ -101,40 +91,24 @@ export function Playground() {
       type: "user_message",
       output: content,
       createdAt: new Date().toISOString(),
-      // metadata: {
-      //   conversation_id: conversationId, // ✅ Thêm conversation_id vào metadata
-      // },
     };
 
-    setPendingMessages((prev) => [...prev, tempMessage]); // Hiển thị tin nhắn "đang gửi"
+    setPendingMessages((prev) => [...prev, tempMessage]);
     try {
       await sendMessage(tempMessage);
 
       console.log("Danh sách tin nhắn:", messages);
       setPendingMessages((prev) =>
         prev.filter((msg) => msg.id !== tempMessage.id)
-      ); // Xóa tin nhắn "đang gửi"
+      );
     } catch (error) {
       console.error("Gửi tin nhắn thất bại:", error);
       alert("Tin nhắn chưa gửi được. Hãy thử lại.");
     }
-    // navigate("/conversations");
     setInputValue("");
   };
-  // const retrySendMessage = async (message, retries = 3) => {
-  //   for (let i = 0; i < retries; i++) {
-  //     try {
-  //       await sendMessage(message, []);
-  //       return true;
-  //     } catch (error) {
-  //       console.warn(`Thử lại lần ${i + 1}: Lỗi gửi tin nhắn`, error);
-  //     }
-  //   }
-  //   return false;
-  // };
 
   const renderMessage = (message: IStep) => {
-    // Mỗi tin nhắn ở UI (name, content, createdAt)
     const dateOptions: Intl.DateTimeFormatOptions = {
       hour: "2-digit",
       minute: "2-digit",
@@ -148,7 +122,6 @@ export function Playground() {
         <div className="w-20 text-sm text-green-500">{message.name}</div>
         <div className="flex-1 border rounded-lg p-2">
           <Markdown>{message.output}</Markdown>
-          {/* <p className="text-black dark:text-white">{message.output}</p> */}
           <small className="text-xs text-gray-500">{date}</small>
         </div>
       </div>

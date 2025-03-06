@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 
-// Định nghĩa kiểu dữ liệu cho User
 interface User {
   _id: string;
   name: string;
@@ -14,23 +13,19 @@ interface UserContextType {
   logout: () => void;
 }
 
-// Tạo Context
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-// Provider để bọc toàn bộ ứng dụng
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
-  // Hàm đăng nhập
   const login = (userData: User) => {
     setUser(userData);
-    localStorage.setItem("token", userData.token); // Lưu token vào localStorage
+    localStorage.setItem("token", userData.token);
   };
 
-  // Hàm đăng xuất
   const logout = () => {
     setUser(null);
-    localStorage.removeItem("token"); // Xóa token khi logout
+    localStorage.removeItem("token");
   };
 
   return (
