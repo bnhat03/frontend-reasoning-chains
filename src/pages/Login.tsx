@@ -28,6 +28,9 @@ export function Login() {
       console.error(error);
     }
   };
+  const handleLoginGoogle = async () => {
+    window.location.href = "http://localhost:8000/auth/google";
+  };
   return (
     <div className="h-screen w-full flex flex-col">
       <div>
@@ -95,7 +98,10 @@ export function Login() {
           <div className="flex-grow border-t border-gray-300"></div>
         </div>
 
-        <div className="w-80 flex justify-center gap-6 border border-[#dbdada] py-4 rounded-lg hover:cursor-pointer hover:bg-[#e3e3e3]">
+        <div
+          className="w-80 flex justify-center gap-6 border border-[#dbdada] py-4 rounded-lg hover:cursor-pointer hover:bg-[#e3e3e3]"
+          onClick={handleLoginGoogle}
+        >
           <span className="text-base">Đăng nhập với</span>
           <button>
             <div className="w-6 h-6">

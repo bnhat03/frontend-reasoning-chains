@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Markdown from "react-markdown";
 import FormInput from "./FormInput";
 
-  window.SpeechRecognition || window.webkitSpeechRecognition;
+window.SpeechRecognition || window.webkitSpeechRecognition;
 
 const NewPrompt = ({
   addMessage,
@@ -17,18 +17,7 @@ const NewPrompt = ({
   useEffect(() => {
     endChatRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatData]);
-
   const add = async (text: string, isInitial: boolean) => {
-    // if (isInitial) {
-    //   addMessage(text);
-    //   return;
-    // }
-
-    // try {
-    //   addMessage(text);
-    // } catch (err) {
-    //   console.error(err);
-    // }
     addMessage(text);
   };
 
@@ -49,8 +38,8 @@ const NewPrompt = ({
     <>
       <div className="w-[65%] mb-5 absolute bottom-0 bg-white dark:bg-[#63636377] rounded-2xl p-4 shadow-[0_2px_10px_rgba(0,0,0,0.15)] transition-colors duration-1000">
         <FormInput
-          question={question} 
-          setQuestion={setQuestion} 
+          question={question}
+          setQuestion={setQuestion}
           handleSubmit={handleSubmit}
         />
       </div>

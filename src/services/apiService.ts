@@ -48,3 +48,7 @@ export const getListConversations = async () => {
 export const getHistory = async (idConversation: string) => {
   return api.get(`/history/${idConversation}`);
 };
+
+export const getMe = async () => {
+  return api.get(`/info`);
+};
