@@ -20,12 +20,7 @@ export function SignUp() {
       return;
     }
     try {
-      const response = await signUpService(
-        username,
-        email,
-        password,
-        confirmPassword
-      );
+      const response = await signUpService(username, email, password);
       if (response.status === 200) {
         navigate("/login");
       }
@@ -36,7 +31,7 @@ export function SignUp() {
   };
 
   const handleLoginGoogle = async () => {
-    window.location.href = "http://localhost:8000/auth/google";
+    window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/google`;
   };
 
   return (

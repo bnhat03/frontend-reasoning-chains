@@ -10,7 +10,7 @@ export function Login() {
   let [email, setEmail] = useState("");
   let [password, setPassword] = useState("");
   let navigate = useNavigate();
-  const { setUserInfor, addChatList } = useApp();
+  const { setUserInfor, addChatList, modelsList } = useApp();
   const handleLogin = async () => {
     if (!email || !password) {
       alert("Vui lòng nhập đầy đủ thông tin");
@@ -21,15 +21,16 @@ export function Login() {
       const token = responseLogin.data.token;
       setUserInfor({ email, token, isAuthenticated: true });
       localStorage.setItem("token", token);
+      localStorage.setItem("selectedModel", modelsList[0].id);
       const responseConversation = await getListConversations();
-      addChatList(responseConversation.data);
+      addChatList(responseConversation.data.reverse());
       navigate("/dashboard");
     } catch (error) {
       console.error(error);
     }
   };
   const handleLoginGoogle = async () => {
-    window.location.href = "http://localhost:8000/auth/google";
+    window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/google`;
   };
   return (
     <div className="h-screen w-full flex flex-col">

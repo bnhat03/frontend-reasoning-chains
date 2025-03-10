@@ -18,7 +18,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const navigate = useNavigate();
-  const { user, setUserInfor } = useApp();
+  const { user, setUserInfor, modelsList } = useApp();
   const [isOpen, setIsOpen] = useState(false);
   const [isDark, setIsDark] = useState(
     localStorage.getItem("theme") === "dark"
@@ -27,6 +27,7 @@ const Header: React.FC<HeaderProps> = ({ isSidebarOpen, setIsSidebarOpen }) => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("selectedModel");
     setUserInfor({ token: "", email: "", isAuthenticated: false });
     disconnect();
     navigate("/login");
@@ -43,6 +44,15 @@ const Header: React.FC<HeaderProps> = ({ isSidebarOpen, setIsSidebarOpen }) => {
       localStorage.setItem("theme", "light");
     }
   }, [isDark]);
+  // model
+  const [selectedModel, setSelectedModel] = useState(
+    localStorage.getItem("selectedModel") || modelsList[0]?.id || ""
+  );
+  const handleModelChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newModel = e.target.value;
+    setSelectedModel(newModel);
+    localStorage.setItem("selectedModel", newModel);
+  };
 
   return (
     <div className="w-full flex justify-between items-center pl-5 pr-10 absolute top-0">
@@ -66,16 +76,29 @@ const Header: React.FC<HeaderProps> = ({ isSidebarOpen, setIsSidebarOpen }) => {
           </div>
         )}
         {/* Logo */}
-        <div className="w-22 h-20 py-4">
-          <img
-            src={isDark ? codecompleteImgDark : codecompleteImgLight}
-            alt="Code Complete"
-            className="w-full h-full object-contain"
-          />
+        <div className="flex items-center gap-3">
+          <div className="w-22 h-20 py-4">
+            <img
+              src={isDark ? codecompleteImgDark : codecompleteImgLight}
+              alt="Code Complete"
+              className="w-full h-full object-contain"
+            />
+          </div>
+          {/* Dropdown chọn Model */}
+          <select
+            className="px-3 py-1 border rounded-md bg-white dark:bg-gray-800 dark:text-white"
+            value={selectedModel}
+            onChange={handleModelChange}
+          >
+            {modelsList.map((model) => (
+              <option key={model.id} value={model.id}>
+                {model.name}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
-      {/* Icons */}
       <div className="flex gap-5 items-center">
         {/* Toggle Light/Dark Mode */}
         <div
@@ -101,18 +124,16 @@ const Header: React.FC<HeaderProps> = ({ isSidebarOpen, setIsSidebarOpen }) => {
                 <img className="w-12 h-12" src={googleIcon} alt="" />
                 <span className="text-sm mt-2">{user?.email}</span>
               </div>
-              <div className="p-3 flex justify-center border-t dark:border-gray-700">
+              <div
+                className="p-3 flex justify-center border-t dark:border-gray-700 hover:bg-[#9b96963e]"
+                onClick={handleLogout}
+              >
                 <img
                   className="opacity-70 dark:invert mr-2"
                   src={logoutIcon}
                   alt=""
                 />
-                <button
-                  className="dark:hover:text-red-400"
-                  onClick={handleLogout}
-                >
-                  Đăng xuất
-                </button>
+                <button className="dark:hover:text-red-400 ">Đăng xuất</button>
               </div>
             </div>
           )}

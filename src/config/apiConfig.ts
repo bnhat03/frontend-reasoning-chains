@@ -14,7 +14,7 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
-    if (token && config.url !== "/login") {
+    if (token && config.url !== "/login" && config.url !== "/models") {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;

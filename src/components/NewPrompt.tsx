@@ -23,7 +23,7 @@ const NewPrompt = ({
 
   useEffect(() => {
     if (chatData.length === 1 && chatData[0].role === "user") {
-      add(chatData[0].parts[0].text, true);
+      add(chatData[0].text, true);
     }
   }, []);
 

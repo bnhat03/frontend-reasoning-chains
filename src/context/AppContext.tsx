@@ -9,6 +9,11 @@ interface Conversation {
   content: string;
 }
 
+interface Model {
+  id: string;
+  name: string;
+}
+
 interface UserContextType {
   user: User | null;
   setUserInfor: (userData: User) => void;
@@ -20,51 +25,57 @@ interface ChatContextType {
 }
 
 interface AppContextType {
+  // User State
   user: User | null;
   setUserInfor: (userData: User) => void;
-  logout: () => void;
+  // Chat State
   chatList: Conversation[];
-  addChatList: (convesationData: Conversation[]) => void;
+  addChatList: (conversationData: Conversation[]) => void;
+  prevMessagesLength: number;
+  setPrevMessagesLength: (length: number) => void;
+  // Models State
+  modelsList: Model[];
+  setModelsList: (models: Model[]) => void;
 }
-
-// Tạo AppContext
 const AppContext = createContext<AppContextType | undefined>(undefined);
 const DEFAULT_USER: User = {
   email: "",
   token: "",
   isAuthenticated: false,
 };
-// Provider để bọc toàn bộ ứng dụng
 export const AppProvider = ({ children }: { children: ReactNode }) => {
-  // Quản lý User
+  // User
   const [user, setUser] = useState<User | null>(DEFAULT_USER);
-
   const setUserInfor = (userData: User) => {
     setUser(userData);
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem("token");
-  };
-
-  // Quản lý Chat
+  //Chat
   const [chatList, setChatList] = useState<Conversation[]>([]);
-
   const addChatList = (conversationData: Conversation[]) => {
     setChatList((prevChats) => [...conversationData]);
   };
+  const [prevMessagesLength, setPrevMessagesLength] = useState<number>(0);
+  const [modelsList, setModelsList] = useState<Model[]>([]);
 
   return (
     <AppContext.Provider
-      value={{ user, setUserInfor, logout, chatList, addChatList }}
+      value={{
+        user,
+        setUserInfor,
+        chatList,
+        addChatList,
+        prevMessagesLength,
+        setPrevMessagesLength,
+        modelsList,
+        setModelsList,
+      }}
     >
       {children}
     </AppContext.Provider>
   );
 };
 
-// Hook để sử dụng AppContext dễ dàng hơn
 export const useApp = () => {
   const context = useContext(AppContext);
   if (!context) throw new Error("useApp must be used within an AppProvider");

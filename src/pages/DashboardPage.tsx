@@ -1,59 +1,17 @@
 import { useNavigate } from "react-router-dom";
-// import sendIcon from "./../assets/img/send.svg";
-import { chatListState } from "../store/atoms";
-import { useApp } from "../context/AppContext";
-import { chatHistories } from "@/data";
 import FormInput from "@/components/FormInput";
 import { useState } from "react";
-import {
-  IStep,
-  useChatInteract,
-  useChatMessages,
-  useChatSession,
-} from "@chainlit/react-client";
-import { useEffect, useMemo } from "react";
-import Markdown from "react-markdown";
-
-// interface Chat {
-//   _id: string;
-//   title: string;
-// }
 
 const DashboardPage = () => {
   const navigate = useNavigate();
-  // const { chatList, addChat } = useChat();
   const [question, setQuestion] = useState("");
-  const { sendMessage } = useChatInteract();
-  const { messages } = useChatMessages();
-  const { connect, disconnect } = useChatSession();
-
-  // re-connect socket
-  useEffect(() => {
-    const reconnectSocket = async () => {
-      await disconnect();
-      const token = localStorage.getItem("token");
-      await connect({
-        transports: ["websocket"],
-        userEnv: {
-          Authorization: `Bearer ${token}`,
-        },
-        withCredentials: true,
-      });
-    };
-    reconnectSocket();
-  }, []);
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!question) return;
     try {
       let firstMessage = {
         role: "user",
-        parts: [
-          {
-            text: question,
-          },
-        ],
+        text: question,
       };
       navigate(`/dashboard/chats/new`, {
         state: { firstMessage },
